@@ -67,6 +67,7 @@
 - 若需國際化支援，可在 `public/app.js` 建立多語系字串表並依使用者語系切換。
 - 目前僅使用瀏覽器 `fetch` 與 `navigator.clipboard` API，如需支援較舊的瀏覽器，建議加入 polyfill。
 
+
 ## GitHub Pages 部署
 
 本專案已內建 GitHub Actions 工作流程（`.github/workflows/deploy.yml`），只要將程式碼推送到 `main` 分支便會自動：
@@ -78,6 +79,7 @@
 若需手動觸發部署，可在 GitHub Actions 頁面選擇 **Deploy to GitHub Pages** 工作流程並使用 `Run workflow`。首次部署前，請在專案設定的 **Pages** 中選擇 **GitHub Actions** 作為部署來源。
 
 > 注意：GitHub Pages 只會部署前端靜態資源。若要在生產環境使用 Short.io API，請另外部署 `server.js` 至支援 Node.js 的主機，或設定前端呼叫可用的 API 代理網址。
+
 
 ## 注意事項
 
