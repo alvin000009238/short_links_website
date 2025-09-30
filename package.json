@@ -1,0 +1,17 @@
+{
+  "name": "short_links_website",
+  "version": "1.0.0",
+  "description": "A minimal Short.io-powered URL shortener dashboard",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "short.io",
+    "url-shortener",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "ISC"
+}
