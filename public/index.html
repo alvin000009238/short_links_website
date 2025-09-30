@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>短網址管理控制台</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>短網址管理控制台</h1>
+      <p>使用 Short.io API 建立與管理專屬短網址</p>
+    </header>
+
+    <main class="layout">
+      <section class="card">
+        <div class="card-header">
+          <h2>建立短網址</h2>
+          <p id="active-domain" class="domain-chip" aria-live="polite"></p>
+        </div>
+        <form id="create-form" class="form">
+          <label class="form-field">
+            <span>原始網址 *</span>
+            <input type="url" id="originalURL" name="originalURL" placeholder="https://example.com" required />
+          </label>
+          <label class="form-field">
+            <span>自訂路徑 (選填)</span>
+            <input type="text" id="path" name="path" placeholder="my-campaign" />
+          </label>
+          <label class="form-field">
+            <span>標題 (選填)</span>
+            <input type="text" id="title" name="title" placeholder="2025 春季活動" />
+          </label>
+          <label class="form-field">
+            <span>到期日 (選填)</span>
+            <input type="datetime-local" id="expiresAt" name="expiresAt" />
+          </label>
+          <div class="form-row">
+            <label class="form-field checkbox-field">
+              <span>允許重複建立</span>
+              <input type="checkbox" id="allowDuplicates" name="allowDuplicates" />
+            </label>
+            <label class="form-field">
+              <span>重新導向類型</span>
+              <select id="redirectType" name="redirectType">
+                <option value="">預設 (302)</option>
+                <option value="301">301 永久導向</option>
+                <option value="302">302 暫時導向</option>
+                <option value="307">307 暫時導向</option>
+              </select>
+            </label>
+          </div>
+          <label class="form-field">
+            <span>標籤 (以逗號分隔，選填)</span>
+            <input type="text" id="tags" name="tags" placeholder="campaign,newsletter" />
+          </label>
+          <label class="form-field">
+            <span>備註 (選填)</span>
+            <textarea id="description" name="description" rows="3" placeholder="補充說明或備註"></textarea>
+          </label>
+          <button type="submit" class="primary-btn">建立短網址</button>
+        </form>
+        <div id="form-message" role="alert"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>短網址列表</h2>
+          <div class="search-group">
+            <input type="search" id="search" placeholder="搜尋標題或原始網址" />
+            <button id="refresh" class="secondary-btn">重新整理</button>
+          </div>
+        </div>
+        <div id="links-container" class="links-container" aria-live="polite">
+          <p class="empty-state">尚未載入資料，請點擊「重新整理」。</p>
+        </div>
+      </section>
+    </main>
+
+    <template id="link-template">
+      <article class="link-item">
+        <div class="link-header">
+          <div>
+            <h3 class="link-title"></h3>
+            <p class="link-short" data-copy></p>
+          </div>
+          <button class="icon-btn" data-action="copy" title="複製短網址">📋</button>
+        </div>
+        <p class="link-original"></p>
+        <p class="link-tags" hidden></p>
+        <footer class="link-footer">
+          <span class="link-created"></span>
+          <div class="link-actions">
+            <button class="secondary-btn" data-action="details">查看資訊</button>
+            <button class="secondary-btn" data-action="edit">編輯</button>
+            <button class="danger-btn" data-action="delete">刪除</button>
+          </div>
+        </footer>
+        <section class="link-details" hidden>
+          <dl></dl>
+        </section>
+      </article>
+    </template>
+
+    <div id="dialog" class="dialog" hidden role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+      <div class="dialog-content">
+        <h3 id="dialog-title"></h3>
+        <pre id="dialog-body"></pre>
+        <button id="dialog-close" class="primary-btn">關閉</button>
+      </div>
+    </div>
+
+    <div id="edit-dialog" class="dialog" hidden role="dialog" aria-modal="true" aria-labelledby="edit-dialog-title">
+      <div class="dialog-content">
+        <h3 id="edit-dialog-title">編輯短網址</h3>
+        <form id="edit-form" class="form" autocomplete="off">
+          <input type="hidden" id="edit-id" name="linkId" />
+          <label class="form-field">
+            <span>原始網址 *</span>
+            <input type="url" id="edit-originalURL" name="originalURL" required />
+          </label>
+          <label class="form-field">
+            <span>自訂路徑</span>
+            <input type="text" id="edit-path" name="path" />
+          </label>
+          <label class="form-field">
+            <span>標題</span>
+            <input type="text" id="edit-title" name="title" />
+          </label>
+          <label class="form-field">
+            <span>到期日</span>
+            <input type="datetime-local" id="edit-expiresAt" name="expiresAt" />
+          </label>
+          <div class="form-row">
+            <label class="form-field checkbox-field">
+              <span>允許重複建立</span>
+              <input type="checkbox" id="edit-allowDuplicates" name="allowDuplicates" />
+            </label>
+            <label class="form-field">
+              <span>重新導向類型</span>
+              <select id="edit-redirectType" name="redirectType">
+                <option value="">預設 (302)</option>
+                <option value="301">301 永久導向</option>
+                <option value="302">302 暫時導向</option>
+                <option value="307">307 暫時導向</option>
+              </select>
+            </label>
+          </div>
+          <label class="form-field">
+            <span>標籤</span>
+            <input type="text" id="edit-tags" name="tags" placeholder="campaign,newsletter" />
+          </label>
+          <label class="form-field">
+            <span>備註</span>
+            <textarea id="edit-description" name="description" rows="3"></textarea>
+          </label>
+          <div id="edit-message" role="alert" class="form-message"></div>
+          <div class="dialog-actions">
+            <button type="button" id="edit-cancel" class="secondary-btn">取消</button>
+            <button type="submit" class="primary-btn">儲存變更</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
